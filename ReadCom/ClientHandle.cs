@@ -22,7 +22,7 @@ namespace ReadCom
         {
             string _msg = _packet.ReadString();
 
-            Console.WriteLine($"[{_packet.CreatedAt:HH:mm:ss.fff}][{_packet.PacketId}] UnknownPacket: {_msg}");
+            LogHelper.Trace($"[{_packet.CreatedAt:HH:mm:ss.fff}][{_packet.PacketId}] UnknownPacket: {_msg}");
         }
 
         public void Connected(Packet _packet)
@@ -30,7 +30,7 @@ namespace ReadCom
             ConnectedPacket p = (ConnectedPacket) _packet;
             string _msg = p.ReadString();
 
-            Console.WriteLine($"[{p.CreatedAt:HH:mm:ss.fff}][{p.PacketId}] Connected: {_msg}");
+            LogHelper.Trace($"[{p.CreatedAt:HH:mm:ss.fff}][{p.PacketId}] Connected: {_msg}");
             _client.SendData(new GetTimePacket());
             
             //_client.SendData(new StartReadingPacket());
@@ -40,7 +40,7 @@ namespace ReadCom
         {
             //string _msg = _packet.ReadString();
 
-            //Console.WriteLine($"[{_packet.CreatedAt:HH:mm:ss.fff}][{_packet.PacketId}] Voltage status message: {_msg}");
+            //LogHelper.Trace($"[{_packet.CreatedAt:HH:mm:ss.fff}][{_packet.PacketId}] Voltage status message: {_msg}");
         }
         
         public void GetTime(Packet _p)
@@ -49,7 +49,7 @@ namespace ReadCom
             _client.ReaderTime = packet.ReaderTimer;
 
             var diff = Math.Abs((DateTime.Now - _client.ReaderTime).TotalSeconds);
-            Console.WriteLine($"Current reader time: {packet.ReaderTimer:yyyy-MM-dd HH:mm:ss} diff from current time in seconds: {diff}");
+            LogHelper.Trace($"Current reader time: {packet.ReaderTimer:yyyy-MM-dd HH:mm:ss} diff from current time in seconds: {diff}");
             if (diff > 10)
             {
                 _client.SendData(new SetTimePacket(DateTime.Now));
@@ -81,7 +81,7 @@ namespace ReadCom
                 db.SaveChanges();
             }
             
-            Console.WriteLine($"[{packet.CreatedAt:HH:mm:ss.fff}][{packet.PacketId}] Chiptime message: {packet.ChipTime:HH:mm:ss.fff} - {packet.ChipCode}");
+            LogHelper.Trace($"[{packet.CreatedAt:HH:mm:ss.fff}][{packet.PacketId}] Chiptime message: {packet.ChipTime:HH:mm:ss.fff} - {packet.ChipCode}");
         }
     }
 }

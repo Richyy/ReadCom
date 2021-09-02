@@ -49,8 +49,8 @@ namespace ReadCom
             consumer.Received += async (ch, ea) =>
             {
                 var body = Encoding.UTF8.GetString(@ea.Body.ToArray());
-                Command command = new Command();
-                
+                Command command = 
+                    JsonSerializer.Deserialize<Command>(body);
                 
                 OnCommandReceived(new CommandEventArgs(command));
                 

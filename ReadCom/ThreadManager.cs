@@ -14,7 +14,7 @@ namespace ReadCom
         {
             if (_action == null)
             {
-                Console.WriteLine("No action to execute on main thread!");
+                LogHelper.Trace("No action to execute on main thread!");
                 return;
             }
 

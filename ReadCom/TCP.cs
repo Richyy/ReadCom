@@ -13,11 +13,14 @@ namespace ReadCom
         {
             _client = client;
         }
+
         private TcpClient _socket;
 
         private NetworkStream _stream;
         private Packet _receivedData;
         private byte[] _receiveBuffer;
+
+        public bool IsConnected => !(_socket is null) && _socket.Connected;
 
         /// <summary>Attempts to connect to the server via TCP.</summary>
         public void Connect()
@@ -35,7 +38,14 @@ namespace ReadCom
         /// <summary>Initializes the newly connected client's TCP-related info.</summary>
         private void ConnectCallback(IAsyncResult result)
         {
-            _socket.EndConnect(result);
+            try
+            {
+                _socket.EndConnect(result);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex.Message);
+            }
 
             if (!_socket.Connected)
             {
@@ -45,6 +55,7 @@ namespace ReadCom
             _stream = _socket.GetStream();
 
             _receivedData = new Packet();
+
             _stream.BeginRead(_receiveBuffer, 0, Client.DataBufferSize, ReceiveCallback, null);
         }
 
@@ -61,7 +72,7 @@ namespace ReadCom
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error sending data to server via TCP: {ex}");
+                LogHelper.Error($"Error sending data to server via TCP: {ex}");
             }
         }
 
@@ -81,8 +92,8 @@ namespace ReadCom
 
                 byte[] data = new byte[byteLength];
                 Array.Copy(_receiveBuffer, data, byteLength);
-                
-                //Console.WriteLine("received:"+Encoding.ASCII.GetString(data));
+
+                LogHelper.Trace("received:" + Encoding.ASCII.GetString(data));
                 packetId++;
 
                 _receivedData.Reset(HandleData(data, packetId)); // Reset receivedData if all data was handled
@@ -123,7 +134,8 @@ namespace ReadCom
                     {
                         if (_client.PacketHandlers.ContainsKey(packet.PacketType))
                         {
-                            _client.PacketHandlers[packet.PacketType](packet); // Call appropriate method to handle the packet
+                            _client.PacketHandlers
+                                [packet.PacketType](packet); // Call appropriate method to handle the packet
                         }
                     }
                 });

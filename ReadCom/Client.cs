@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using ReadCom.Packets;
 
 namespace ReadCom
@@ -13,6 +14,10 @@ namespace ReadCom
         
         private ClientHandle clientEventHandler;
 
+        public int readerId { get; set; }
+        public int readerIp { get; set; }
+        public string timingPoint { get; set; }
+
         public string Ip;
         public int Port;
         private TCP tcp;
@@ -22,6 +27,7 @@ namespace ReadCom
         private bool _isConnected = false;
 
         public bool IsConnected => _isConnected;
+        public bool IsTCPConnected => tcp.IsConnected;
 
         public delegate void PacketHandler(Packet packet);
 
@@ -32,6 +38,7 @@ namespace ReadCom
             Ip = ip;
             Port = port;
             clientEventHandler = new ClientHandle(this);
+            
         }
 
         /// <summary>Attempts to connect to the server.</summary>
@@ -55,7 +62,7 @@ namespace ReadCom
                 {(int) ServerPacketTypes.chiptime, clientEventHandler.ChipTime},
                 {(int) ServerPacketTypes.getTime, clientEventHandler.GetTime},
             };
-            Console.WriteLine("Initialized packets.");
+            LogHelper.Trace("Initialized packets.");
         }
 
         /// <summary>Disconnects from the server and stops all network traffic.</summary>
@@ -66,7 +73,7 @@ namespace ReadCom
                 _isConnected = false;
                 tcp.Disconnect();
 
-                Console.WriteLine("Disconnected from server.");
+                LogHelper.Trace("Disconnected from server.");
             }
         }
         
@@ -74,7 +81,7 @@ namespace ReadCom
         /// <param name="packet">The packet to send.</param>
         public void SendData(Packet packet)
         {
-            Console.WriteLine("Sending "+ packet.GetType().Name +" to reader");
+            LogHelper.Trace("Sending "+ packet.GetType().Name +" to reader");
             tcp.SendData(packet);
         }
     }
