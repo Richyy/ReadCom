@@ -5,6 +5,8 @@ using System.Threading;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using ReadCom.Packets;
+using ReadCom.Models;
+using System.Linq;
 
 namespace ReadCom
 {
@@ -44,11 +46,23 @@ namespace ReadCom
         /// <summary>Attempts to connect to the server.</summary>
         public void ConnectToServer()
         {
+            LogHelper.Trace("Reader"+readerIp+": Connecting to reader.");
             tcp = new TCP(this);
             InitializeClientData();
 
             _isConnected = true;
             tcp.Connect(); // Connect tcp, udp gets connected once tcp is done
+
+
+            //using (var context = new ReaderContext())
+            //{
+
+            //    Reader reader = context.reader
+            //                               .Where(r => r.id == readerId)
+            //                               .FirstOrDefault();
+            //    reader.connection_status = 3;
+            //    context.SaveChanges();
+            //}
         }
 
         /// <summary>Initializes all necessary client data.</summary>
@@ -62,7 +76,7 @@ namespace ReadCom
                 {(int) ServerPacketTypes.chiptime, clientEventHandler.ChipTime},
                 {(int) ServerPacketTypes.getTime, clientEventHandler.GetTime},
             };
-            LogHelper.Trace("Initialized packets.");
+            LogHelper.Trace("Reader"+readerIp+": Initialized packets.");
         }
 
         /// <summary>Disconnects from the server and stops all network traffic.</summary>
@@ -73,7 +87,17 @@ namespace ReadCom
                 _isConnected = false;
                 tcp.Disconnect();
 
-                LogHelper.Trace("Disconnected from server.");
+                //using(var context = new ReaderContext()) {
+
+                //    Reader reader = context.reader
+                //                               .Where(r => r.id == readerId)
+                //                               .FirstOrDefault();
+                //    reader.connection_status = 0;
+
+                //    context.SaveChanges();
+                //}
+
+                LogHelper.Trace("Reader"+readerIp+": Disconnected from reader.");
             }
         }
         
@@ -81,7 +105,7 @@ namespace ReadCom
         /// <param name="packet">The packet to send.</param>
         public void SendData(Packet packet)
         {
-            LogHelper.Trace("Sending "+ packet.GetType().Name +" to reader");
+            LogHelper.Trace("Reader"+readerIp+": Sending "+ packet.GetType().Name +" to reader");
             tcp.SendData(packet);
         }
     }

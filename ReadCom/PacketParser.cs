@@ -14,26 +14,34 @@ namespace ReadCom
             
             Packet packet = null;
             string str = Encoding.ASCII.GetString(packetBytes);
+            //LogHelper.Trace(str);
             if (str.StartsWith("Connected,"))
             {
+                //LogHelper.Trace("connected...");
                 packet = new ConnectedPacket(packetBytes, packetId);
             }
             else if (str.StartsWith("V="))
             {
+                //LogHelper.Trace("voltage...");
                 packet = new VoltagePacket(packetBytes, packetId);
             }
             else if (str.StartsWith("0,"))
             {
+                //LogHelper.Trace("chiptime...");
                 packet = new ChipTimePacket(packetBytes, packetId);
             }
             else if (dateRegex.IsMatch(str))
             {
+                //LogHelper.Trace("date...");
                 packet = new GetTimeResponsePacket(packetBytes, packetId);
             }
             else
             {
+                //LogHelper.Trace("else...");
                 packet = new UnknownPacket(packetBytes, packetId);
             }
+
+            //LogHelper.Trace(packet.PacketType.ToString());
 
             return packet;
         }

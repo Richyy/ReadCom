@@ -2,7 +2,7 @@ namespace ReadCom
 {
     public class LogHelper
     {
-        private static SimpleLogger _logger = new SimpleLogger(@"D:\Projects\ReadComPHP\var\log\csharp.log");
+        private static SimpleLogger _logger = new SimpleLogger(@"/var/www/ReadComPHP/var/log/csharp.log");
 
         public static void Debug(string text)
         {

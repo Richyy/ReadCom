@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System;
-using ReadCom.DataAccess;
 using ReadCom.Models;
 using ReadCom.Packets;
 using ReadCom.Packets.Incoming;
@@ -60,27 +59,27 @@ namespace ReadCom
         {
             ChipTimePacket packet = (ChipTimePacket) _p;
             
-            using (var db = new ChipTimeContext())
-            {
-                var chipTime = new ChipTime()
-                {
-                    AntennaNo = packet.AntennaNo,
-                    ChipCode = packet.ChipCode,
-                    ChipTimeDt = packet.ChipTime,
-                    ChipTimeRaw = packet.ChipTimeRaw,
-                    ChipTimeRawMillisec = packet.ChipTimeRawMillisec,
-                    IsRewind = packet.IsRewind,
-                    LogId = packet.LogId,
-                    ReaderNo = packet.ReaderNo,
-                    ReaderTime = packet.ReaderTime,
-                    Rssi = packet.Rssi,
-                    StartTime = packet.StartTime,
-                    UltraId = packet.UltraId,
-                };
-                db.ChipTimes.Add(chipTime);
-                db.SaveChanges();
-            }
-            
+            //using (var db = new ChipTimeContext())
+            //{
+            //    var chipTime = new ChipTime()
+            //    {
+            //        AntennaNo = packet.AntennaNo,
+            //        ChipCode = packet.ChipCode,
+            //        ChipTimeDt = packet.ChipTime,
+            //        ChipTimeRaw = packet.ChipTimeRaw,
+            //        ChipTimeRawMillisec = packet.ChipTimeRawMillisec,
+            //        IsRewind = packet.IsRewind,
+            //        LogId = packet.LogId,
+            //        ReaderNo = packet.ReaderNo,
+            //        ReaderTime = packet.ReaderTime,
+            //        Rssi = packet.Rssi,
+            //        StartTime = packet.StartTime,
+            //        UltraId = packet.UltraId,
+            //    };
+            //    db.ChipTimes.Add(chipTime);
+            //    db.SaveChanges();
+            //}
+
             LogHelper.Trace($"[{packet.CreatedAt:HH:mm:ss.fff}][{packet.PacketId}] Chiptime message: {packet.ChipTime:HH:mm:ss.fff} - {packet.ChipCode}");
         }
     }

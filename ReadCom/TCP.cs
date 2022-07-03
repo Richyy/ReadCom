@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using ReadCom.Models;
 using ReadCom.Packets;
 
 namespace ReadCom
@@ -32,12 +34,19 @@ namespace ReadCom
             };
 
             _receiveBuffer = new byte[Client.DataBufferSize];
-            _socket.BeginConnect(_client.Ip, _client.Port, ConnectCallback, _socket);
-        }
 
-        /// <summary>Initializes the newly connected client's TCP-related info.</summary>
-        private void ConnectCallback(IAsyncResult result)
-        {
+            //_socket.BeginConnect(_client.Ip, _client.Port, ConnectCallback, _socket);
+
+
+            var result = _socket.BeginConnect(_client.Ip, _client.Port, null, null);
+
+            var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(1));
+
+            if (!success)
+            {
+                throw new Exception("Failed to connect.");
+            }
+
             try
             {
                 _socket.EndConnect(result);
@@ -58,6 +67,30 @@ namespace ReadCom
 
             _stream.BeginRead(_receiveBuffer, 0, Client.DataBufferSize, ReceiveCallback, null);
         }
+
+        ///// <summary>Initializes the newly connected client's TCP-related info.</summary>
+        //private void ConnectCallback(IAsyncResult result)
+        //{
+        //    try
+        //    {
+        //        _socket.EndConnect(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogHelper.Error(ex.Message);
+        //    }
+
+        //    if (!_socket.Connected)
+        //    {
+        //        return;
+        //    }
+
+        //    _stream = _socket.GetStream();
+
+        //    _receivedData = new Packet();
+
+        //    _stream.BeginRead(_receiveBuffer, 0, Client.DataBufferSize, ReceiveCallback, null);
+        //}
 
         /// <summary>Sends data to the client via TCP.</summary>
         /// <param name="packet">The packet to send.</param>
